@@ -1,0 +1,36 @@
+name: Build Geode Mod
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    env:
+      GEODE_SDK_VERSION: v5.11.2
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Geode CLI
+        uses: geode-sdk/setup-geode@v1
+        with:
+          geode-version: ${{ env.GEODE_SDK_VERSION }}
+
+      - name: Build mod
+        shell: pwsh
+        run: |
+          geode build
+
+      - name: Upload .geode artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TimeTo100-windows
+          path: build/*.geode
